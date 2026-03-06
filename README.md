@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# タスク管理アプリケーション (Week1課題)
 
-## Getting Started
+## 🌟 プロジェクト概要
 
-First, run the development server:
+このアプリは、Next.js と Supabase を使用して作成した認証機能付きのタスク管理アプリです。
+現在は Week1 の範囲として、ユーザー登録、ログイン、および認証後のページ遷移（リダイレクト）機能を実装しています。
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🛠 使用技術 (技術スタック)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **フロントエンド**: Next.js (App Router), TypeScript
+- **バックエンド/認証**: Supabase
+- **デプロイ**: Vercel
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 セットアップ手順
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. このリポジトリを自分の PC に保存（クローン）します。
+2. ターミナルで `npm install` を実行し、必要な部品をインストールします。
+3. `.env.local` ファイルを作成し、Supabase の接続情報を設定します。
+4. `npm run dev` コマンドで開発用サーバーを起動します。
 
-## Learn More
+## 🔑 環境変数の設定
 
-To learn more about Next.js, take a look at the following resources:
+Vercel の設定画面（Environment Variables）に以下の項目を設定してください。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `NEXT_PUBLIC_SUPABASE_URL`: Supabase のプロジェクトURL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase の API キー
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📱 画面一覧
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| 画面名             | URL       | 役割・備考                                              |
+| :----------------- | :-------- | :------------------------------------------------------ |
+| **ログイン画面**   | `/login`  | 未ログイン時の自動遷移先です。                          |
+| **新規登録画面**   | `/signup` | 新しいユーザーを作成できます。                          |
+| **タスク一覧画面** | `/tasks`  | ログイン後のみアクセス可能です（Week2で機能拡充予定）。 |
