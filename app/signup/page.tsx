@@ -1,32 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // 移動のための部品
 import { createClient } from "@/lib/supabase";
 
-export default function LoginPage() {
+export default function SignupPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const router = useRouter(); // 移動機能を準備
 
-    const handleLogin = async () => {
+    const handleSignup = async () => {
         const supabase = createClient();
-        const { error } = await supabase.auth.signInWithPassword({
+        // Supabaseに新しいユーザーを登録する命令
+        const { error } = await supabase.auth.signUp({
             email,
             password,
         });
 
         if (error) {
-            alert("ログイン失敗: " + error.message);
+            alert("登録失敗: " + error.message);
         } else {
-            // 成功したら /tasks ページへ自動でジャンプ！
-            router.push("/tasks");
+            alert("確認メールを送信しました（設定によっては即時登録されます）");
         }
     };
 
     return (
         <div style={{ padding: "40px" }}>
-            <h1>ログイン画面</h1>
+            <h1>新規登録画面</h1>
             <input
                 type="email"
                 placeholder="メールアドレス"
@@ -39,7 +37,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
             />
             <br />
-            <button onClick={handleLogin}>ログイン</button>
+            <button onClick={handleSignup}>アカウント作成</button>
         </div>
     );
 }

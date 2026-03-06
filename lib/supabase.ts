@@ -1,4 +1,8 @@
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient } from "@supabase/ssr";
 
-// アプリ全体で使う「Supabaseくん」を呼び出すための設定
-export const createClient = () => createClientComponentClient();
+// 確実に .env.local から値を読み込むための設定
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+export const createClient = () =>
+    createBrowserClient(supabaseUrl, supabaseAnonKey);
