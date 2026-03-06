@@ -4,7 +4,10 @@ export default function Home() {
     return (
         <div style={{ padding: "40px" }}>
             <h1>タスク管理アプリ</h1>
-            <p>Week1の課題：ユーザー認証の実装</p>
+            <p>個人用タスク管理Webアプリケーション</p>
+            <h2>
+                日々のタスクを記録し、完了・未完了を管理できるWebアプリです。
+            </h2>
             <hr />
             <div style={{ display: "flex", gap: "20px" }}>
                 <Link
