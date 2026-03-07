@@ -25,6 +25,7 @@ export default function SignupPage() {
     return (
         <div style={{ padding: "40px" }}>
             <h1>新規登録画面</h1>
+            <h2>メールアドレスと８文字のパスワードを登録してください。</h2>
             <input
                 type="email"
                 placeholder="メールアドレス"
