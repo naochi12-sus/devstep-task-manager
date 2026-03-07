@@ -16,12 +16,18 @@ export default function Home() {
                 >
                     ログイン画面へ
                 </Link>
+                <h2>
+                    登録済みのユーザーはログインしてタスク管理を始めましょう。
+                </h2>
                 <Link
                     href="/signup"
                     style={{ color: "blue", textDecoration: "underline" }}
                 >
                     新規登録画面へ
                 </Link>
+                <h2>
+                    未登録のユーザーは新規登録してからタスク管理を始めましょう。
+                </h2>
             </div>
         </div>
     );
