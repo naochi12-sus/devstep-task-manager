@@ -11,7 +11,6 @@ export default function Home() {
 
             <hr style={{ margin: "20px 0" }} />
 
-            {/* 👇 ここを縦並び（column）に変更し、リンクと説明をセットでまとめました */}
             <div
                 style={{
                     display: "flex",
