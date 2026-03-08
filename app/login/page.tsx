@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation"; // 移動のための部品
 import { createClient } from "@/lib/supabase";
+import Link from "next/link"; // 追加：リンクを使うための部品
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -40,6 +41,30 @@ export default function LoginPage() {
             />
             <br />
             <button onClick={handleLogin}>ログイン</button>
+
+            {/* 追加：新規登録画面へ行くリンク */}
+            <div style={{ marginTop: "20px" }}>
+                <Link
+                    href="/signup"
+                    style={{ color: "#2563eb", textDecoration: "underline" }}
+                >
+                    まだアカウントをお持ちでない方はこちら（新規登録画面へ）
+                </Link>
+            </div>
+
+            {/* 追加：トップページに戻るリンク */}
+            <div style={{ marginTop: "20px" }}>
+                <Link
+                    href="/"
+                    style={{
+                        color: "#6b7280",
+                        textDecoration: "underline",
+                        fontSize: "14px",
+                    }}
+                >
+                    ← トップページに戻る
+                </Link>
+            </div>
         </div>
     );
 }
