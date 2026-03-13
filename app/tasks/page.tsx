@@ -29,7 +29,11 @@ export default function TasksPage() {
                 return;
             }
 
-            const { data, error } = await supabase.from("tasks").select("*");
+            const { data, error } = await supabase
+                .from("tasks")
+                .select("*")
+                .eq("user_id", session.user.id)
+                .order("created_at", { ascending: false });
 
             if (error) {
                 console.error("データ取得エラー:", error.message);
