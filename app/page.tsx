@@ -23,7 +23,7 @@ export default function Home() {
 
                 {/* アプリ名（グラデーション） */}
                 <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-6">
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-500">
+                    <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-cyan-500">
                         Our Goal
                     </span>
                 </h1>
