@@ -141,7 +141,7 @@ export default function TasksPage() {
                     <div className="text-slate-800">
                         <h2 className="text-2xl font-bold">タスク一覧</h2>
                         <p className="text-sm text-slate-500 mt-1">
-                            進捗を記録しましょう
+                            タスクを追加して、進捗を記録しましょう
                         </p>
                     </div>
                     <Link

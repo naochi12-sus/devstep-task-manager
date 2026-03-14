@@ -26,7 +26,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-100 to-slate-200 p-4">
             <div className="max-w-md w-full bg-white/90 backdrop-blur-sm p-10 rounded-2xl shadow-xl border border-white/50">
                 {/* ロゴとタイトルのセクション */}
                 <div className="flex items-center justify-center gap-3 mb-2">
@@ -37,13 +37,13 @@ export default function LoginPage() {
                         height={48}
                         className="rounded-full shadow-sm hover:scale-105 transition-transform"
                     />
-                    <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-500 tracking-tight">
+                    <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-cyan-500 tracking-tight">
                         Our Goal
                     </h1>
                 </div>
 
                 <p className="text-sm font-medium text-slate-500 mt-1 mb-8 text-center">
-                    チーム日報管理システム
+                    タスク管理システム
                 </p>
 
                 {/* フォームのエリア */}
