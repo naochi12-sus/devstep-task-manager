@@ -74,6 +74,11 @@ export default function TasksPage() {
 
     // --- 【削除】タスクを消去する ---
     const deleteTask = async (id: string) => {
+        // ★ 確認メッセージを出し、キャンセルされたらここで処理をストップする
+        const confirmDelete =
+            window.confirm("本当にこのタスクを削除しますか？");
+        if (!confirmDelete) return;
+
         const { error } = await supabase.from("tasks").delete().eq("id", id);
         if (!error) {
             setTasks(tasks.filter((t) => t.id !== id));
