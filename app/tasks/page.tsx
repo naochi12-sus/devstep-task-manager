@@ -7,14 +7,16 @@ import Image from "next/image";
 import Link from "next/link";
 import {
     LogOut,
+    ClipboardList,
+    Plus,
     CheckCircle2,
     Circle,
-    ClipboardList,
-    Trash2,
-    Pencil,
-    Plus,
     Clock,
     Calendar,
+    Eye,
+    Pencil,
+    Trash2,
+    RefreshCw,
 } from "lucide-react";
 
 interface Task {
@@ -217,8 +219,16 @@ export default function TasksPage() {
                                         </div>
                                     </div>
 
-                                    {/* ペンマークとゴミ箱マーク */}
+                                    {/* 目玉マークとペンマークとゴミ箱マーク */}
                                     <div className="flex items-center gap-2">
+                                        <Link
+                                            href={`/tasks/${task.id}`}
+                                            className="inline-flex items-center p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                                            title="詳細を見る"
+                                        >
+                                            <Eye className="w-6 h-6" />
+                                        </Link>
+
                                         <Link
                                             href={`/tasks/${task.id}/edit`}
                                             className="p-2 text-slate-300 hover:text-indigo-500 transition-colors rounded-lg hover:bg-indigo-50"
@@ -226,6 +236,7 @@ export default function TasksPage() {
                                         >
                                             <Pencil className="w-5 h-5" />
                                         </Link>
+
                                         <button
                                             onClick={() => deleteTask(task.id)}
                                             className="p-2 text-slate-300 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50"
