@@ -149,7 +149,7 @@ export default function TasksPage() {
                         className="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl hover:bg-indigo-700 transition-colors font-bold shadow-sm"
                     >
                         <Plus className="w-5 h-5" />
-                        新規タスク作成
+                        タスク新規作成
                     </Link>
                 </div>
 
