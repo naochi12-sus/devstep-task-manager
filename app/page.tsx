@@ -30,11 +30,11 @@ export default function Home() {
 
                 {/* キャッチコピー */}
                 <p className="text-xl md:text-2xl font-bold text-slate-700 mb-6">
-                    チームの成長を加速させる日報システム
+                    タスク管理システム
                 </p>
 
                 <p className="text-base md:text-lg text-slate-500 mb-12 max-w-2xl mx-auto leading-relaxed">
-                    日々の業務や目標の進捗をチーム全員で共有。
+                    日々の業務や目標の進捗を管理し成長を加速させましょう。
                     <br className="hidden md:block" />
                     シンプルな操作で、毎日の振り返りを価値あるものに変えましょう。
                 </p>

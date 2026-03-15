@@ -4,12 +4,27 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import Image from "next/image";
-import { LogOut, CheckCircle2, Circle, ClipboardList } from "lucide-react";
+import Link from "next/link";
+import {
+    LogOut,
+    ClipboardList,
+    Plus,
+    CheckCircle2,
+    Circle,
+    Clock,
+    Calendar,
+    Eye,
+    Pencil,
+    Trash2,
+    RefreshCw,
+} from "lucide-react";
 
 interface Task {
     id: string;
     title: string;
     is_completed: boolean;
+    due_date?: string;
+    created_at: string;
 }
 
 export default function TasksPage() {
@@ -18,34 +33,73 @@ export default function TasksPage() {
     const router = useRouter();
     const supabase = createClient();
 
+    // --- 【読み込み】画面を開いたときにデータを取る ---
     useEffect(() => {
         const fetchTasks = async () => {
             const {
                 data: { session },
             } = await supabase.auth.getSession();
-
             if (!session) {
                 router.push("/login");
                 return;
             }
 
-            const { data, error } = await supabase.from("tasks").select("*");
+            const { data, error } = await supabase
+                .from("tasks")
+                .select("*")
+                .eq("user_id", session.user.id)
+                .order("created_at", { ascending: false });
 
-            if (error) {
-                console.error("データ取得エラー:", error.message);
-            } else {
-                setTasks(data || []);
-            }
-
+            if (!error) setTasks(data || []);
             setLoading(false);
         };
-
         fetchTasks();
     }, [router, supabase]);
+
+    // --- 【更新】完了・未完了を切り替える ---
+    const toggleTask = async (id: string, currentStatus: boolean) => {
+        const { error } = await supabase
+            .from("tasks")
+            .update({ is_completed: !currentStatus })
+            .eq("id", id);
+
+        if (!error) {
+            setTasks(
+                tasks.map((t) =>
+                    t.id === id ? { ...t, is_completed: !currentStatus } : t,
+                ),
+            );
+        }
+    };
+
+    // --- 【削除】タスクを消去する ---
+    const deleteTask = async (id: string) => {
+        // ★ 確認メッセージを出し、キャンセルされたらここで処理をストップする
+        const confirmDelete =
+            window.confirm("本当にこのタスクを削除しますか？");
+        if (!confirmDelete) return;
+
+        const { error } = await supabase.from("tasks").delete().eq("id", id);
+        if (!error) {
+            setTasks(tasks.filter((t) => t.id !== id));
+        }
+    };
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
         router.push("/login");
+    };
+
+    // 日付を日本時間で綺麗に表示するための関数
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleString("ja-JP", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
     };
 
     if (loading) {
@@ -53,9 +107,7 @@ export default function TasksPage() {
             <div className="min-h-screen flex items-center justify-center bg-slate-50">
                 <div className="animate-pulse flex flex-col items-center gap-4">
                     <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-                    <p className="text-slate-500 font-medium">
-                        データを読み込んでいます...
-                    </p>
+                    <p className="text-slate-500 font-medium">読み込み中...</p>
                 </div>
             </div>
         );
@@ -63,87 +115,160 @@ export default function TasksPage() {
 
     return (
         <div className="min-h-screen bg-slate-50">
-            {/* ヘッダー（ナビゲーションバー） */}
+            {/* ロゴ付きヘッダー */}
             <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
                 <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-                    {/* 左側：ロゴとアプリ名 */}
                     <div className="flex items-center gap-3">
                         <Image
                             src="/Logo1.png"
-                            alt="Our Goal ロゴ"
+                            alt="Logo"
                             width={36}
                             height={36}
-                            className="rounded-full shadow-sm"
+                            className="rounded-full"
                         />
-                        <h1 className="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-500 tracking-tight">
+                        <h1 className="text-xl font-extrabold text-indigo-600">
                             Our Goal
                         </h1>
                     </div>
-
-                    {/* 右側：ログアウトボタン */}
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors"
+                        className="flex items-center gap-2 text-slate-500 hover:text-red-600 transition-colors"
+                        style={{ cursor: "pointer" }}
                     >
                         <LogOut className="w-4 h-4" />
-                        <span className="hidden sm:inline">ログアウト</span>
+                        <span>ログアウト</span>
                     </button>
                 </div>
             </header>
 
-            {/* メインコンテンツ（タスク一覧エリア） */}
             <main className="max-w-4xl mx-auto px-4 py-8">
-                <div className="flex items-center gap-3 mb-8">
-                    <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
-                        <ClipboardList className="w-6 h-6" />
-                    </div>
-                    <div>
-                        <h2 className="text-2xl font-bold text-slate-800">
-                            日報・タスク一覧
-                        </h2>
+                {/* タイトルと新規作成ボタンを横並びに配置 */}
+                <div className="mb-8 flex justify-between items-end">
+                    <div className="text-slate-800">
+                        <h2 className="text-2xl font-bold">タスク一覧</h2>
                         <p className="text-sm text-slate-500 mt-1">
-                            チームの進捗を確認しましょう
+                            タスクを追加して、進捗を記録しましょう
                         </p>
                     </div>
+                    <Link
+                        href="/tasks/new"
+                        className="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl hover:bg-indigo-700 transition-colors font-bold shadow-sm"
+                    >
+                        <Plus className="w-5 h-5" />
+                        タスク新規作成
+                    </Link>
                 </div>
 
-                {/* タスクのリスト（カード型デザイン） */}
                 <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
                     {tasks.length > 0 ? (
                         <ul className="divide-y divide-slate-100">
                             {tasks.map((task) => (
                                 <li
                                     key={task.id}
-                                    className="flex items-center gap-4 p-4 hover:bg-slate-50 transition-colors group"
+                                    className="flex items-center justify-between p-4 hover:bg-slate-50 group min-h-18 transition-colors"
                                 >
-                                    {/* 完了状態によってアイコンと色を変える */}
-                                    <button className="text-slate-400 hover:text-indigo-600 transition-colors">
-                                        {task.is_completed ? (
-                                            <CheckCircle2 className="w-6 h-6 text-emerald-500" />
-                                        ) : (
-                                            <Circle className="w-6 h-6" />
-                                        )}
-                                    </button>
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex items-start gap-4 flex-1">
+                                            <button
+                                                onClick={() =>
+                                                    toggleTask(
+                                                        task.id,
+                                                        task.is_completed,
+                                                    )
+                                                }
+                                                className="shrink-0 focus:outline-none"
+                                                style={{ cursor: "pointer" }} // 強制的に指マークにする
+                                            >
+                                                {task.is_completed ? (
+                                                    /* 完了時：ホバーで少し濃い緑にする */
+                                                    <CheckCircle2 className="w-6 h-6 text-emerald-500 hover:text-emerald-600 transition-colors" />
+                                                ) : (
+                                                    /* 未完了時：ホバーでインディゴ色にする */
+                                                    <Circle className="w-6 h-6 text-slate-400 hover:text-indigo-500 transition-colors" />
+                                                )}
+                                            </button>
 
-                                    <span
-                                        className={`text-base font-medium ${task.is_completed ? "text-slate-400 line-through" : "text-slate-700"}`}
-                                    >
-                                        {task.title}
-                                    </span>
+                                            <div className="flex flex-col gap-2">
+                                                {/* タイトルとステータス表示 */}
+                                                <div className="flex flex-wrap items-center gap-3">
+                                                    <span
+                                                        className={`text-lg font-bold ${task.is_completed ? "text-slate-400 line-through" : "text-slate-800"}`}
+                                                    >
+                                                        {task.title}
+                                                    </span>
+                                                    {task.is_completed ? (
+                                                        <span className="text-xs font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md">
+                                                            完了
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded-md">
+                                                            未完了
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                {/* 作成日時と期限日 */}
+                                                <div className="flex flex-wrap items-center gap-4 text-sm mt-1">
+                                                    <span className="flex items-center gap-1.5 text-slate-500">
+                                                        <Clock className="w-4 h-4" />
+                                                        作成:{" "}
+                                                        {formatDate(
+                                                            task.created_at,
+                                                        )}
+                                                    </span>
+                                                    {task.due_date && (
+                                                        <span className="flex items-center gap-1.5 text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md font-medium">
+                                                            <Calendar className="w-4 h-4" />
+                                                            期限:{" "}
+                                                            {task.due_date}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* 目玉マークとペンマークとゴミ箱マーク */}
+                                    <div className="flex items-center gap-2">
+                                        <Link
+                                            href={`/tasks/${task.id}`}
+                                            className="p-2 text-slate-300 hover:text-indigo-500 transition-colors rounded-lg hover:bg-indigo-50"
+                                            title="詳細を見る"
+                                        >
+                                            <Eye className="w-6 h-6" />
+                                        </Link>
+
+                                        <Link
+                                            href={`/tasks/${task.id}/edit`}
+                                            className="p-2 text-slate-300 hover:text-indigo-500 transition-colors rounded-lg hover:bg-indigo-50"
+                                            title="編集する"
+                                        >
+                                            <Pencil className="w-5 h-5" />
+                                        </Link>
+
+                                        <button
+                                            onClick={() => deleteTask(task.id)}
+                                            className="p-2 text-slate-300 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50"
+                                            style={{ cursor: "pointer" }} // 強制的に指マークにする設定
+                                            title="削除する"
+                                        >
+                                            <Trash2 className="w-5 h-5" />
+                                        </button>
+                                    </div>
                                 </li>
                             ))}
                         </ul>
                     ) : (
-                        // タスクが0件の時の美しい空っぽ状態（Empty State）
+                        // 美しい空っぽ状態
                         <div className="p-12 flex flex-col items-center justify-center text-center">
                             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
                                 <ClipboardList className="w-8 h-8 text-slate-400" />
                             </div>
                             <h3 className="text-lg font-bold text-slate-700 mb-1">
-                                まだ日報がありません
+                                まだタスクがありません
                             </h3>
                             <p className="text-slate-500">
-                                新しいタスクを追加して、進捗を記録しましょう。
+                                右上の「新規作成」からタスクを追加して、進捗を記録しましょう。
                             </p>
                         </div>
                     )}

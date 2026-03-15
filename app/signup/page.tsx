@@ -25,8 +25,8 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 p-4">
-            {/* 🌟 カードの背景をダークカラー（slate-800）に反転！ */}
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-100 to-slate-200 p-4">
+            {/* カードの背景をダークカラー（slate-800）に反転！ */}
             <div className="max-w-md w-full bg-slate-800/95 backdrop-blur-sm p-10 rounded-2xl shadow-2xl border border-slate-700">
                 {/* ロゴとタイトルのセクション */}
                 <div className="flex items-center justify-center gap-3 mb-2">
@@ -37,8 +37,8 @@ export default function SignupPage() {
                         height={48}
                         className="rounded-full shadow-md hover:scale-105 transition-transform"
                     />
-                    {/* 🌟 ダーク背景に映えるよう、文字のグラデーションを少し明るめに調整 */}
-                    <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400 tracking-tight">
+                    {/* ダーク背景に映えるよう、文字のグラデーションを少し明るめに調整 */}
+                    <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-cyan-400 tracking-tight">
                         Our Goal
                     </h1>
                 </div>
@@ -74,12 +74,12 @@ export default function SignupPage() {
                     // 【最初の入力フォーム画面】
                     <>
                         <p className="text-sm font-medium text-slate-300 mt-1 mb-8 text-center">
-                            チームに参加して日報を始めましょう
+                            アカウントを作成して始めましょう
                         </p>
 
                         <div className="space-y-4">
                             <div>
-                                {/* 🌟 入力欄は真っ白に反転し、文字色は黒（slate-900）に */}
+                                {/* 入力欄は真っ白に反転し、文字色は黒（slate-900）に */}
                                 <input
                                     type="email"
                                     placeholder="メールアドレス"
@@ -98,10 +98,11 @@ export default function SignupPage() {
                                 />
                             </div>
 
-                            {/* 🌟 ボタンの色は元のインディゴに戻しました */}
+                            {/* ボタンの色は元のインディゴに戻しました */}
                             <button
                                 onClick={handleSignup}
                                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 mt-2"
+                                style={{ cursor: "pointer" }}
                             >
                                 アカウントを作成
                             </button>
