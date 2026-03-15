@@ -161,6 +161,7 @@ export default function EditTaskPage() {
                                 value={dueDate}
                                 onChange={(e) => setDueDate(e.target.value)}
                                 className="p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700"
+                                style={{ cursor: "pointer" }} // 強制的に指マークにする
                             />
                         </div>
 
@@ -174,6 +175,7 @@ export default function EditTaskPage() {
                             <button
                                 type="submit"
                                 className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-sm"
+                                style={{ cursor: "pointer" }} // 強制的に指マークにする
                             >
                                 変更を保存する
                             </button>

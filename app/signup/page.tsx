@@ -102,6 +102,7 @@ export default function SignupPage() {
                             <button
                                 onClick={handleSignup}
                                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 mt-2"
+                                style={{ cursor: "pointer" }}
                             >
                                 アカウントを作成
                             </button>

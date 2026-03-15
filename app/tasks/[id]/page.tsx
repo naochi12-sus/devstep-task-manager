@@ -152,6 +152,7 @@ export default function TaskDetailPage() {
                         <button
                             onClick={handleDelete}
                             className="flex items-center gap-2 px-4 py-2 bg-white border border-red-200 text-red-500 font-bold rounded-lg hover:bg-red-50 transition-all shadow-sm"
+                            style={{ cursor: "pointer" }} // 強制的に指マークにする
                         >
                             <Trash2 className="w-4 h-4" /> 削除
                         </button>
@@ -161,10 +162,16 @@ export default function TaskDetailPage() {
                 {/* タスク詳細カード */}
                 <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
                     <div className="flex items-start gap-4 mb-8">
-                        <button onClick={toggleTask} className="mt-1 shrink-0">
+                        <button
+                            onClick={toggleTask}
+                            className="mt-1 shrink-0 cursor-pointer"
+                            style={{ cursor: "pointer" }} // 強制的に指マーク
+                        >
                             {task.is_completed ? (
-                                <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                                /* 完了時：ホバーで少し色を濃く（または薄く）する設定 */
+                                <CheckCircle2 className="w-8 h-8 text-emerald-500 hover:text-emerald-600 transition-colors" />
                             ) : (
+                                /* 未完了時：既存の設定 */
                                 <Circle className="w-8 h-8 text-slate-300 hover:text-indigo-400 transition-colors" />
                             )}
                         </button>

@@ -133,6 +133,7 @@ export default function TasksPage() {
                     <button
                         onClick={handleLogout}
                         className="flex items-center gap-2 text-slate-500 hover:text-red-600 transition-colors"
+                        style={{ cursor: "pointer" }}
                     >
                         <LogOut className="w-4 h-4" />
                         <span>ログアウト</span>
@@ -176,11 +177,14 @@ export default function TasksPage() {
                                                     )
                                                 }
                                                 className="shrink-0 focus:outline-none"
+                                                style={{ cursor: "pointer" }} // 強制的に指マークにする
                                             >
                                                 {task.is_completed ? (
-                                                    <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                                                    /* 完了時：ホバーで少し濃い緑にする */
+                                                    <CheckCircle2 className="w-6 h-6 text-emerald-500 hover:text-emerald-600 transition-colors" />
                                                 ) : (
-                                                    <Circle className="w-6 h-6 text-slate-400" />
+                                                    /* 未完了時：ホバーでインディゴ色にする */
+                                                    <Circle className="w-6 h-6 text-slate-400 hover:text-indigo-500 transition-colors" />
                                                 )}
                                             </button>
 
@@ -228,7 +232,7 @@ export default function TasksPage() {
                                     <div className="flex items-center gap-2">
                                         <Link
                                             href={`/tasks/${task.id}`}
-                                            className="inline-flex items-center p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                                            className="p-2 text-slate-300 hover:text-indigo-500 transition-colors rounded-lg hover:bg-indigo-50"
                                             title="詳細を見る"
                                         >
                                             <Eye className="w-6 h-6" />
@@ -245,6 +249,7 @@ export default function TasksPage() {
                                         <button
                                             onClick={() => deleteTask(task.id)}
                                             className="p-2 text-slate-300 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50"
+                                            style={{ cursor: "pointer" }} // 強制的に指マークにする設定
                                             title="削除する"
                                         >
                                             <Trash2 className="w-5 h-5" />
