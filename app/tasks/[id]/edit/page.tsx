@@ -45,7 +45,7 @@ export default function EditTaskPage() {
         };
 
         fetchTask();
-    }, [params.id, supabase]);
+    }, [taskId, supabase]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
