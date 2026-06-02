@@ -56,12 +56,12 @@ export default function EditTaskPage() {
             setErrorMsg("タスクタイトルは必須です。");
             return;
         }
-        if (title.length > 100) {
-            setErrorMsg("タスクタイトルは100文字以内で入力してください。");
+        if (title.length > 200) {
+            setErrorMsg("タスクタイトルは200文字以内で入力してください。");
             return;
         }
-        if (description.length > 500) {
-            setErrorMsg("タスク詳細は500文字以内で入力してください。");
+        if (description.length > 2000) {
+            setErrorMsg("タスク詳細は2000文字以内で入力してください。");
             return;
         }
 
@@ -123,7 +123,7 @@ export default function EditTaskPage() {
                             <label className="block text-sm font-bold text-slate-700 mb-2">
                                 タスクタイトル{" "}
                                 <span className="text-red-500 text-xs font-normal">
-                                    ※必須（100文字以内）
+                                    ※必須（200文字以内）
                                 </span>
                             </label>
                             <input
@@ -132,13 +132,16 @@ export default function EditTaskPage() {
                                 onChange={(e) => setTitle(e.target.value)}
                                 className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900"
                             />
+                            <p className="text-right text-sm  text-slate-700 mt-1">
+                                あと {200 - title.length} 文字
+                            </p>
                         </div>
 
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2">
                                 タスク詳細{" "}
-                                <span className="text-slate-400 text-xs font-normal">
-                                    ※任意（500文字以内）
+                                <span className=" text-slate-700 text-xs font-normal">
+                                    ※任意（2000文字以内）
                                 </span>
                             </label>
                             <textarea
@@ -147,12 +150,15 @@ export default function EditTaskPage() {
                                 rows={5}
                                 className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none resize-none text-slate-900"
                             />
+                            <p className="text-right text-sm  text-slate-700 mt-1">
+                                あと {2000 - description.length} 文字
+                            </p>
                         </div>
 
                         <div>
                             <label className="block text-sm font-bold text-slate-700 mb-2">
                                 期限日{" "}
-                                <span className="text-slate-400 text-xs font-normal">
+                                <span className=" text-slate-700 text-xs font-normal">
                                     ※任意
                                 </span>
                             </label>
