@@ -29,6 +29,8 @@ interface Task {
 export default function TaskDetailPage() {
     const [task, setTask] = useState<Task | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isDeleting, setIsDeleting] = useState(false); // ★削除中のフラグ
+    const [isToggling, setIsToggling] = useState(false); // ★更新中のフラグ
     const [errorMsg, setErrorMsg] = useState("");
 
     const router = useRouter();
@@ -42,66 +44,76 @@ export default function TaskDetailPage() {
         if (!taskId) return;
 
         const fetchTask = async () => {
-            const { data, error } = await supabase
-                .from("tasks")
-                .select("*")
-                .eq("id", taskId)
-                .single();
+            try {
+                const { data, error } = await supabase
+                    .from("tasks")
+                    .select("*")
+                    .eq("id", taskId)
+                    .single();
 
-            if (error) {
-                setErrorMsg("データの読み込みに失敗しました。");
-            } else if (data) {
+                if (error) throw error;
                 setTask(data);
+            } catch (err) {
+                console.error(err); // 警告対策：エラー内容をログに出す
+                setErrorMsg("データの読み込みに失敗しました。");
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
 
         fetchTask();
     }, [taskId, supabase]);
 
-    // 削除機能
+    // 削除機能：try...catch で安全に
     const handleDelete = async () => {
-        const confirmDelete =
-            window.confirm("本当にこのタスクを削除しますか？");
-        if (!confirmDelete) return;
+        if (!window.confirm("本当にこのタスクを削除しますか？")) return;
 
-        const { error } = await supabase
-            .from("tasks")
-            .delete()
-            .eq("id", taskId);
-
-        if (error) {
-            alert("削除に失敗しました。");
-        } else {
+        setIsDeleting(true);
+        try {
+            const { error } = await supabase
+                .from("tasks")
+                .delete()
+                .eq("id", taskId);
+            if (error) throw error;
             router.push("/tasks");
+        } catch (err) {
+            console.error(err); // 警告対策：エラー内容をログに出す
+            setErrorMsg("データの読み込みに失敗しました。");
+        } finally {
+            setIsDeleting(false);
         }
     };
 
-    // ステータス切り替え機能
+    // ステータス切り替え：連打防止
     const toggleTask = async () => {
-        if (!task) return;
-        const now = new Date().toISOString();
-        const { error } = await supabase
-            .from("tasks")
-            .update({
-                is_completed: !task.is_completed,
-                updated_at: now,
-            })
-            .eq("id", taskId);
+        if (!task || isToggling) return;
 
-        if (!error) {
+        setIsToggling(true);
+        try {
+            const now = new Date().toISOString();
+            const { error } = await supabase
+                .from("tasks")
+                .update({ is_completed: !task.is_completed, updated_at: now })
+                .eq("id", taskId);
+
+            if (error) throw error;
+
             setTask({
                 ...task,
                 is_completed: !task.is_completed,
                 updated_at: now,
             });
+        } catch (err) {
+            console.error(err); // 警告対策
+            setErrorMsg("ステータスの更新に失敗しました。");
+        } finally {
+            setIsToggling(false);
         }
     };
 
-    // 日付フォーマット関数
+    // (formatDate関数はそのまま)
     const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleString("ja-JP", {
+        return new Date(dateString).toLocaleString("ja-JP", {
             year: "numeric",
             month: "2-digit",
             day: "2-digit",
@@ -112,15 +124,15 @@ export default function TaskDetailPage() {
 
     if (loading)
         return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                データを読み込み中...
+            <div className="min-h-screen flex items-center justify-center">
+                読み込み中...
             </div>
         );
 
     if (errorMsg || !task) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 gap-4">
-                <p className="text-red-500 font-medium">
+            <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+                <p className="text-red-500">
                     {errorMsg || "タスクが見つかりませんでした"}
                 </p>
                 <Link href="/tasks" className="text-indigo-600 hover:underline">
@@ -133,26 +145,27 @@ export default function TaskDetailPage() {
     return (
         <div className="min-h-screen bg-slate-50 py-8 px-4">
             <div className="max-w-3xl mx-auto">
-                {/* ヘッダー部分（戻るリンクと、編集・削除ボタン） */}
+                {/* 戻るボタン */}
                 <div className="flex justify-between items-center mb-6">
                     <Link
                         href="/tasks"
-                        className="inline-flex items-center gap-2 text-slate-500 hover:text-indigo-600 transition-colors font-medium"
+                        className="flex items-center gap-2 text-slate-500 hover:text-indigo-600"
                     >
                         <ArrowLeft className="w-4 h-4" /> 一覧へ戻る
                     </Link>
 
+                    {/* 編集・削除ボタン（PencilとTrash2を使用！） */}
                     <div className="flex items-center gap-3">
                         <Link
                             href={`/tasks/${taskId}/edit`}
-                            className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 font-bold rounded-lg hover:bg-slate-50 hover:text-indigo-600 transition-all shadow-sm"
+                            className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg shadow-sm hover:text-indigo-600"
                         >
                             <Pencil className="w-4 h-4" /> 編集
                         </Link>
                         <button
                             onClick={handleDelete}
-                            className="flex items-center gap-2 px-4 py-2 bg-white border border-red-200 text-red-500 font-bold rounded-lg hover:bg-red-50 transition-all shadow-sm"
-                            style={{ cursor: "pointer" }} // 強制的に指マークにする
+                            disabled={isDeleting}
+                            className="flex items-center gap-2 px-4 py-2 bg-white border border-red-200 text-red-500 rounded-lg shadow-sm hover:bg-red-50"
                         >
                             <Trash2 className="w-4 h-4" /> 削除
                         </button>

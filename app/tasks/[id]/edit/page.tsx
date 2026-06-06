@@ -8,11 +8,13 @@ import { ArrowLeft } from "lucide-react";
 
 // URLから [id] の部分を受け取るための設定
 export default function EditTaskPage() {
+    // 1. 各データの初期状態
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [dueDate, setDueDate] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
     const [loading, setLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
 
     const router = useRouter();
     const supabase = createClient();
@@ -21,37 +23,59 @@ export default function EditTaskPage() {
     const params = useParams();
     const taskId = params.id as string;
 
-    // 画面が開いた時に、該当するタスクのデータを1件だけ取ってくる
+    // 画面が開いた時の処理
     useEffect(() => {
-        // IDがまだ取れていない時は何もしない
         if (!taskId) return;
 
-        const fetchTask = async () => {
-            const { data, error } = await supabase
-                .from("tasks")
-                .select("*")
-                .eq("id", taskId) // 取得した taskId を使う
-                .single(); // 1件だけ取得
+        const fetchData = async () => {
+            // 1. まずlocalStorageから下書きを探す
+            const savedData = localStorage.getItem(`task-draft-${taskId}`);
 
-            if (error) {
-                setErrorMsg("データの読み込みに失敗しました。");
-            } else if (data) {
-                // 取ってきたデータを入力欄にセットする
-                setTitle(data.title);
-                setDescription(data.description || "");
-                setDueDate(data.due_date || "");
+            if (savedData) {
+                // 下書きがあればそれをセット
+                const { title, description, dueDate } = JSON.parse(savedData);
+                setTitle(title);
+                setDescription(description);
+                setDueDate(dueDate);
+                setLoading(false); // 読み込み完了
+            } else {
+                // 2. 下書きがなければデータベースから取得
+                const { data, error } = await supabase
+                    .from("tasks")
+                    .select("*")
+                    .eq("id", taskId)
+                    .single();
+
+                if (error) {
+                    setErrorMsg("データの読み込みに失敗しました。");
+                } else if (data) {
+                    setTitle(data.title);
+                    setDescription(data.description || "");
+                    setDueDate(data.due_date || "");
+                }
+                setLoading(false); // 読み込み完了
             }
-            setLoading(false);
         };
 
-        fetchTask();
+        fetchData();
     }, [taskId, supabase]);
 
+    // 2. 入力中：常にlocalStorageへ自動保存（下書き）
+    useEffect(() => {
+        if (!loading) {
+            localStorage.setItem(
+                `task-draft-${taskId}`,
+                JSON.stringify({ title, description, dueDate }),
+            );
+        }
+    }, [title, description, dueDate, loading, taskId]);
+
+    // 3. 送信時：バリデーション ＋ try...catchによる安全な通信
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setErrorMsg("");
 
-        // バリデーション（入力チェック）
+        // 【バリデーション】
         if (!title.trim()) {
             setErrorMsg("タスクタイトルは必須です。");
             return;
@@ -65,34 +89,38 @@ export default function EditTaskPage() {
             return;
         }
 
-        // 更新日時用に「今の時間」を取得
-        const now = new Date().toISOString();
+        setIsSaving(true);
 
-        // データベースを上書き更新（Update）
-        const { error } = await supabase
-            .from("tasks")
-            .update({
-                title,
-                description: description || null,
-                due_date: dueDate || null,
-                updated_at: now,
-            })
-            .eq("id", taskId); // taskId に変更
+        try {
+            const now = new Date().toISOString();
+            const { error } = await supabase
+                .from("tasks")
+                .update({
+                    title,
+                    description,
+                    due_date: dueDate,
+                    updated_at: now,
+                })
+                .eq("id", taskId);
 
-        if (error) {
-            setErrorMsg("保存に失敗しました。");
-        } else {
-            // 保存成功後、タスク一覧画面へ戻る
+            if (error) throw new Error(error.message);
+
+            // 成功時は下書きを消して一覧へ
+            localStorage.removeItem(`task-draft-${taskId}`);
             router.push("/tasks");
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setErrorMsg(`保存に失敗しました: ${err.message}`);
+            } else {
+                setErrorMsg("予期せぬエラーが発生しました。");
+            }
+        } finally {
+            setIsSaving(false);
         }
     };
 
     if (loading)
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                データを読み込み中...
-            </div>
-        );
+        return <div className="p-10 text-center">データを読み込み中...</div>;
 
     return (
         <div className="min-h-screen bg-slate-50 py-8 px-4">
@@ -180,10 +208,15 @@ export default function EditTaskPage() {
                             </Link>
                             <button
                                 type="submit"
-                                className="px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-sm"
-                                style={{ cursor: "pointer" }} // 強制的に指マークにする
+                                disabled={isSaving} // ★保存中は押せなくする
+                                className={`px-8 py-3 bg-indigo-600 text-white font-bold rounded-xl shadow-sm transition-colors ${
+                                    isSaving
+                                        ? "opacity-50 cursor-not-allowed"
+                                        : "hover:bg-indigo-700"
+                                }`}
                             >
-                                変更を保存する
+                                {isSaving ? "保存中..." : "変更を保存する"}{" "}
+                                {/* ★文字も変わります */}
                             </button>
                         </div>
                     </form>
