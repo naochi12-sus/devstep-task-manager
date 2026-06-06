@@ -159,13 +159,15 @@ export default function TaskDetailPage() {
                         <Link
                             href={`/tasks/${taskId}/edit`}
                             className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg shadow-sm hover:text-indigo-600"
+                            style={{ cursor: "pointer" }} // 強制的に指マークにする
                         >
                             <Pencil className="w-4 h-4" /> 編集
                         </Link>
                         <button
                             onClick={handleDelete}
                             disabled={isDeleting}
-                            className="flex items-center gap-2 px-4 py-2 bg-white border border-red-200 text-red-500 rounded-lg shadow-sm hover:bg-red-50"
+                            className="flex items-center gap-2 px-4 py-2 bg-white border border-red-200 text-red-500 rounded-lg shadow-sm hover:bg-red-50 cursor-pointer"
+                            style={{ cursor: "pointer" }} // 強制的に指マークにする
                         >
                             <Trash2 className="w-4 h-4" /> 削除
                         </button>
