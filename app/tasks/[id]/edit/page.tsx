@@ -214,6 +214,7 @@ export default function EditTaskPage() {
                                         ? "opacity-50 cursor-not-allowed"
                                         : "hover:bg-indigo-700"
                                 }`}
+                                style={{ cursor: "pointer" }} // 強制的に指マークにする
                             >
                                 {isSaving ? "保存中..." : "変更を保存する"}{" "}
                                 {/* ★文字も変わります */}
