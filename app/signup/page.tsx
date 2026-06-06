@@ -39,7 +39,7 @@ export default function SignupPage() {
                     />
                     {/* ダーク背景に映えるよう、文字のグラデーションを少し明るめに調整 */}
                     <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-cyan-400 tracking-tight">
-                        Our Goal
+                        My Tasks
                     </h1>
                 </div>
 
