@@ -38,7 +38,7 @@ export default function LoginPage() {
                         className="rounded-full shadow-sm hover:scale-105 transition-transform"
                     />
                     <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-cyan-500 tracking-tight">
-                        Our Goal
+                        My Tasks
                     </h1>
                 </div>
 

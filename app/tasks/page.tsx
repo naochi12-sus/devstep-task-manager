@@ -127,7 +127,7 @@ export default function TasksPage() {
                             className="rounded-full"
                         />
                         <h1 className="text-xl font-extrabold text-indigo-600">
-                            Our Goal
+                            My Tasks
                         </h1>
                     </div>
                     <button
